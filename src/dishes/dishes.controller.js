@@ -8,7 +8,10 @@ const nextId = require("../utils/nextId");
 
 // TODO: Implement the /dishes handlers needed to make the tests pass
 
-// helper function
+////////////////////////////////////////////////
+// helper function                            //
+////////////////////////////////////////////////
+
 function dishExists(req, res, next) {
   const { dishId } = req.params;
   const foundDish = dishes.find((dish) => dish.id == dishId);
@@ -25,7 +28,7 @@ function dishExists(req, res, next) {
 function dishIdMatches(req, res, next) {
   const { dishId } = req.params;
   const { data: { id } = {} } = req.body;
-  if (dishId && id == dishId) {
+  if (!id || id === dishId) {
     next();
   }
   next({
@@ -39,6 +42,9 @@ function bodyDataHas(propertyName) {
     const { data = {} } = req.body;
 
     if (data[propertyName]) {
+      //   console.log("=========================");
+      //   console.log("data[propertyName]: ", data[propertyName]);
+      //   console.log("value is not empty");
       return next();
     }
     next({
@@ -50,19 +56,21 @@ function bodyDataHas(propertyName) {
 
 function isPriceValid(req, res, next) {
   const { data: { price } = {} } = req.body;
-  //   console.log("price: ", price);
-  if (price <= 0 || isNaN(price)) {
-    // console.log("falthy case");
-    next({
-      status: 400,
-      message: `Dish must have a price that is an integer greater than 0`,
-    });
+  //   console.log("price: ", price, typeof price);
+  if (price > 0 && Number.isInteger(price)) {
+    // console.log("truthy case");
+    return next();
   }
-  //   console.log("truthy case");
-  return next();
+  //   console.log("falthy case");
+  next({
+    status: 400,
+    message: `Dish must have a price that is an integer greater than 0`,
+  });
 }
 
-// main function
+////////////////////////////////////////////////
+// main function                              //
+////////////////////////////////////////////////
 
 function create(req, res) {
   const { data: { name, description, price, image_url } = {} } = req.body;
@@ -83,7 +91,6 @@ function update(req, res) {
   const { data } = req.body;
   const { name, description, price, image_url } = data;
 
-  // update dish
   dish.name = name;
   dish.description = description;
   dish.price = price;
@@ -108,13 +115,19 @@ module.exports = {
   update: [
     dishExists,
     dishIdMatches,
-    isPriceValid,
     bodyDataHas("name"),
     bodyDataHas("description"),
     bodyDataHas("price"),
-    // isPriceValid,
     bodyDataHas("image_url"),
+    isPriceValid,
     update,
   ],
-  create,
+  create: [
+    bodyDataHas("name"),
+    bodyDataHas("description"),
+    bodyDataHas("price"),
+    bodyDataHas("image_url"),
+    isPriceValid,
+    create,
+  ],
 };
