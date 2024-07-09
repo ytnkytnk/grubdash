@@ -24,4 +24,12 @@ module.exports = [
     image_url:
       "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?h=530&w=350",
   },
+  {
+    id: 1,
+    name: "test name",
+    description: "test description",
+    price: 100,
+    image_url:
+      "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?h=530&w=350",
+  },
 ];
