@@ -74,8 +74,9 @@ function isPriceValid(req, res, next) {
 
 function create(req, res) {
   const { data: { name, description, price, image_url } = {} } = req.body;
+  const newId = nextId();
   const newDish = {
-    id: dishes.length + 1,
+    id: newId,
     name,
     description,
     price,
